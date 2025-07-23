@@ -1,0 +1,15 @@
+{
+    "manifest_version": 2,
+    "name": "KatKen",
+    "version": "1.0",
+
+    "description": "A fun little extension to add my kitty Vincent on top of your window browser. Click to drag!",
+    "permissions": ["activeTab"],
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["katken.js"],
+            "css": ["katken.css"]
+        }
+    ]
+}

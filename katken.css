@@ -1,0 +1,31 @@
+:root{
+    --pixel-size: 3;
+}
+
+.character{
+    width: calc(32px * var(--pixel-size));
+    height: calc(32px * var(--pixel-size));
+    overflow: hidden;
+    position: fixed;
+    user-select: none;
+    z-index: 9999999;
+}
+
+.char-spritesheet{
+    animation: moveSpritesheet 6s steps(10) infinite;
+    width: calc(320px * var(--pixel-size));
+    height: calc(320px * var(--pixel-size));
+    image-rendering: pixelated;
+    background-image: url('kitty-kat.png');
+    background-size: 100%;
+}
+
+
+@keyframes moveSpritesheet{
+    from{
+        transform: translate3d(0px,0,0)
+    }
+    to{
+        transform: translate3d(-100%,0,0)
+    }
+}
