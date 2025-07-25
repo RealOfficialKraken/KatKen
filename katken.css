@@ -15,7 +15,7 @@
 }
 
 .char-spritesheet{
-    animation: moveSpritesheet 6s steps(10) infinite;
+    animation: moveSpritesheet 4s steps(10) infinite;
     width: calc(320px * var(--pixel-size));
     height: calc(320px * var(--pixel-size));
     image-rendering: pixelated;

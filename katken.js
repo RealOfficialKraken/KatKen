@@ -10,10 +10,17 @@ document.documentElement.insertBefore(dragParent, document.body);
 dragParent.appendChild(draggable);
 
 let isDragging = false;
+let didDrag = false;
 let offsetX = 0;
 let offsetY = 0;
+let previousRow = -1;
+let resetTimeoutId = null; // Store timeout reference here
+let resetTimeoutIdIdle = null; // Store timeout reference here
+let idleTimer = 3700;
+let sleepTimer = 60000; //always keep this shorter than the Idle Timer
 
 draggable.addEventListener('mousedown', (e) => {
+  didDrag = false;
   isDragging = true;
   offsetX = e.clientX - dragParent.offsetLeft;
   offsetY = e.clientY - dragParent.offsetTop;
@@ -21,6 +28,8 @@ draggable.addEventListener('mousedown', (e) => {
 
 document.addEventListener('mousemove', (e) => {
   if (isDragging) {
+    didDrag = true;
+
     let newX = e.clientX - offsetX;
     let newY = e.clientY - offsetY;
 
@@ -40,3 +49,56 @@ document.addEventListener('mousemove', (e) => {
 document.addEventListener('mouseup', () => {
   isDragging = false;
 });
+
+dragParent.addEventListener('click', () => {
+  if (isDragging) return;
+  if (didDrag) return;
+
+  draggable.style.animation = 'none';
+
+  draggable.offsetHeight;
+
+  draggable.style.animation = 'moveSpritesheet 4s steps(10) infinite';
+
+  const randomFacing = Math.random() < 0.5 ? -1 : 1;
+  dragParent.style.setProperty('--facing', randomFacing);
+
+  if (resetTimeoutId) {
+    clearTimeout(resetTimeoutId);
+    resetTimeoutId = null;
+  }
+
+  if (resetTimeoutIdIdle) {
+    clearTimeout(resetTimeoutIdIdle);
+    resetTimeoutId = null;
+  }
+
+  resetTimeoutIdIdle = setTimeout(() => {
+    draggable.style.setProperty('--sheet-row', '-96px');
+    previousRow = 1;
+    resetTimeoutIdIdle = null;
+  }, idleTimer);
+  resetTimeoutId = setTimeout(() => {
+    draggable.style.setProperty('--sheet-row', '0px');
+    previousRow = 0;
+    resetTimeoutId = null;
+  }, sleepTimer);
+
+  let newRow;
+  
+  //do {
+  //  newRow = Math.floor(Math.random() * 2) + 1
+  //} while (newRow === previousRow);
+
+  newRow = 2;
+
+  previousRow = newRow;
+  const newOffset = -96 * newRow;
+  draggable.style.setProperty('--sheet-row', `${newOffset}px`);
+});
+
+resetTimeoutId = setTimeout(() => {
+    draggable.style.setProperty('--sheet-row', '0px');
+    previousRow = 0;
+    resetTimeoutId = null;
+  }, sleepTimer);
