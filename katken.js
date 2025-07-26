@@ -1,24 +1,43 @@
-// Create the draggable div
+// KatKen injects an element directly outside of the <body> element.
+// This element can be dragged and it's xy coordinate is saved to local storage.
+// You can affect the cat's settings in the extension's opetion
+// This is made after my kitten Vincent, where I drew the cat's art directly from me looking at him, and him doing cat things.
+// THIS MEANS there are no other cats (yet, MAYBE.. Don't get your hopes up.)
+// It already took me a lot of work making the spritesheet from hand, and I can rest easy knowing Vinny boy will live forever <3
+// He's still alive during this time of writing c:
+
+
+//construct the parent element
 const dragParent = document.createElement('div');
 dragParent.className = 'character'
 dragParent.id = 'draggable';
 
+//construct the child element containing the spritesheet
 const draggable = document.createElement('div');
 draggable.className = 'char-spritesheet'
 
+//inject construct outside of the <body> element
 document.documentElement.insertBefore(dragParent, document.body);
 dragParent.appendChild(draggable);
+browser.storage.local.get('catPosition').then((result) => {
+  if (result.catPosition) {
+    dragParent.style.left = `${result.catPosition.left}px`;
+    dragParent.style.top = `${result.catPosition.top}px`;
+  }
+});
 
+//declare vars
 let isDragging = false;
 let didDrag = false;
 let offsetX = 0;
 let offsetY = 0;
 let previousRow = -1;
-let resetTimeoutId = null; // Store timeout reference here
-let resetTimeoutIdIdle = null; // Store timeout reference here
-let idleTimer = 3700;
+let resetTimeoutId = null;
+let resetTimeoutIdIdle = null;
+let idleTimer = 3700; //Vinny boy sit and watch your mouse (kinda :P)
 let sleepTimer = 60000; //always keep this shorter than the Idle Timer
 
+//listen for dragging, set drag vars to ensure the anim doesn't play
 draggable.addEventListener('mousedown', (e) => {
   didDrag = false;
   isDragging = true;
@@ -26,6 +45,7 @@ draggable.addEventListener('mousedown', (e) => {
   offsetY = e.clientY - dragParent.offsetTop;
 });
 
+//If it's dragging, say it's dragging, then move to wherever the mouse is.
 document.addEventListener('mousemove', (e) => {
   if (isDragging) {
     didDrag = true;
@@ -33,16 +53,17 @@ document.addEventListener('mousemove', (e) => {
     let newX = e.clientX - offsetX;
     let newY = e.clientY - offsetY;
 
-    // Get the viewport dimensions
+    //const current window border vars
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
-    // Prevent dragging the div outside the window bounds
+    //prevent the user from dragging the div outside the window borders
     newX = Math.min(Math.max(0, newX), windowWidth - dragParent.offsetWidth);
     newY = Math.min(Math.max(0, newY), windowHeight - dragParent.offsetHeight);
 
     dragParent.style.left = newX + 'px';
     dragParent.style.top = newY + 'px';
+    browser.storage.local.set({ catPosition: { left: newX, top: newY } });
   }
 });
 
@@ -84,13 +105,11 @@ dragParent.addEventListener('click', () => {
     resetTimeoutId = null;
   }, sleepTimer);
 
-  let newRow;
-  
-  //do {
-  //  newRow = Math.floor(Math.random() * 2) + 1
-  //} while (newRow === previousRow);
+let newRow;
+do {
+  newRow = 2 + Math.floor(Math.random() * 2);
+} while (newRow === previousRow);
 
-  newRow = 2;
 
   previousRow = newRow;
   const newOffset = -96 * newRow;
@@ -102,3 +121,11 @@ resetTimeoutId = setTimeout(() => {
     previousRow = 0;
     resetTimeoutId = null;
   }, sleepTimer);
+
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.catPosition) {
+    const newPos = changes.catPosition.newValue;
+    dragParent.style.left = `${newPos.left}px`;
+    dragParent.style.top = `${newPos.top}px`;
+  }
+});
