@@ -18,8 +18,8 @@
     width: calc(320px * var(--pixel-size));
     height: calc(320px * var(--pixel-size));
     image-rendering: pixelated;
-    background-image: url('kitty-kat.png');
     background-size: 100%;
+    background-image: url('vincent-spritesheet.png')
 }
 
 

@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
         label.textContent = `Size: ${value}x`;
     }
 
-    browser.storage.local.get("pixelSize").then(result => {
+    ext.storage.local.get("pixelSize").then(result => {
         let pixelSize = Number(result.pixelSize);
         if (!pixelSize || isNaN(pixelSize)) {
             pixelSize = 1;
-            browser.storage.local.set({ pixelSize });
+            ext.storage.local.set({ pixelSize });
         }
         slider.value = pixelSize;
         updateLabel(pixelSize);
@@ -20,26 +20,29 @@ document.addEventListener('DOMContentLoaded', () => {
     slider.addEventListener("input", () => {
         const newSize = Number(slider.value);
         updateLabel(newSize);
-        browser.storage.local.set({ pixelSize: newSize }).then(() => {
-            browser.storage.local.get(null).then(items => {
+        ext.storage.local.set({ pixelSize: newSize }).then(() => {
+            ext.storage.local.get(null).then(items => {
                 console.log("Storage after set:", items);
             });
         });
     });
 
-    browser.storage.local.get('catVisible').then(result => {
+    ext.storage.local.get('catVisible').then(result => {
         toggleCat.checked = result.catVisible !== false; // default to true
     });
 
     toggleCat.addEventListener('change', () => {
-        browser.storage.local.set({ catVisible: toggleCat.checked });
+        ext.storage.local.set({ catVisible: toggleCat.checked });
     });
 
     const resetButton = document.querySelector('label[for="reset-xy"]') || document.getElementById('reset-xy');
 
     if (resetButton) {
         resetButton.addEventListener('click', () => {
-            browser.storage.local.set({ catPosition: { left: 0, top: 0 } });
+            ext.storage.local.set({ catPosition: { left: 0, top: 0 } });
         });
     }
 });
+
+// Use browser.* if available, otherwise fallback to chrome.*
+const ext = typeof browser !== "undefined" ? browser : chrome;

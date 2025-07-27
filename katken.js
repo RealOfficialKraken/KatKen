@@ -7,8 +7,12 @@
 // He's still alive during this time of writing c:
 
 
+// Use browser.* if available, otherwise fallback to chrome.*
+const ext = typeof browser !== "undefined" ? browser : chrome;
+const imageUrl = ext.runtime.getURL('vincent-spritesheet.png');
+
 //add listener for pixel size
-browser.storage.onChanged.addListener((changes, area) => {
+ext.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.pixelSize) {
     const newPixelSize = parseFloat(changes.pixelSize.newValue) || 1;
     dragParent.style.setProperty('--pixel-size', newPixelSize);
@@ -40,12 +44,13 @@ dragParent.id = 'draggable';
 //construct the child element containing the spritesheet
 const draggable = document.createElement('div');
 draggable.className = 'char-spritesheet';
+//draggable.style.backgroundImage = `url('${imageUrl}')`;
 
 //inject construct outside of the <body> element
 document.documentElement.insertBefore(dragParent, document.body);
 dragParent.appendChild(draggable);
 
-browser.storage.local.get('pixelSize').then(result => {
+ext.storage.local.get('pixelSize').then(result => {
   const pixelSize = parseFloat(result.pixelSize) || 1;
   dragParent.style.setProperty('--pixel-size', pixelSize);
 
@@ -54,13 +59,13 @@ browser.storage.local.get('pixelSize').then(result => {
   const initialOffset = -1 * spriteHeight * pixelSize * row;
   draggable.style.setProperty('--sheet-row', `${initialOffset}px`);
 });
-browser.storage.local.get('catPosition').then((result) => {
+ext.storage.local.get('catPosition').then((result) => {
   if (result.catPosition) {
     dragParent.style.left = `${result.catPosition.left}px`;
     dragParent.style.top = `${result.catPosition.top}px`;
   }
 });
-browser.storage.local.get('catVisible').then(result => {
+ext.storage.local.get('catVisible').then(result => {
     if (result.catVisible === false) {
         dragParent.style.display = 'none';
     } else {
@@ -105,7 +110,7 @@ document.addEventListener('mousemove', (e) => {
 
     dragParent.style.left = newX + 'px';
     dragParent.style.top = newY + 'px';
-    browser.storage.local.set({ catPosition: { left: newX, top: newY } });
+    ext.storage.local.set({ catPosition: { left: newX, top: newY } });
   }
 });
 
@@ -176,8 +181,19 @@ resetTimeoutId = setTimeout(() => {
 
 
 //log the storage values to the console at all times
-browser.storage.local.get(null).then(items => {
+ext.storage.local.get(null).then(items => {
   console.log("KatKen storage contents:", items);
 }).catch(err => {
   console.error("Error reading storage:", err);
 });
+
+function getStorage(keys) {
+    return new Promise((resolve) => {
+        ext.storage.local.get(keys, resolve);
+    });
+}
+function setStorage(items) {
+    return new Promise((resolve) => {
+        ext.storage.local.set(items, resolve);
+    });
+}

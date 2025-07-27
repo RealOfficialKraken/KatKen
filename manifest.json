@@ -2,12 +2,11 @@
     "manifest_version": 3,
     "name": "KrakenKat",
     "version": "1.21",
-    "icons": {
-    "48": "icons/icon-48.png",
-    "96": "icons/icon-96.png"
-    },
-
     "description": "A fun little extension to add my kitty Vincent on top of your window browser. Click to drag!",
+    "icons": {
+        "48": "icons/icon-48.png",
+        "96": "icons/icon-96.png"
+    },
     "permissions": [
             "activeTab",
             "storage",
