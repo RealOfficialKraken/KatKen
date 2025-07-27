@@ -34,4 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleCat.addEventListener('change', () => {
         browser.storage.local.set({ catVisible: toggleCat.checked });
     });
+
+    const resetButton = document.querySelector('label[for="reset-xy"]') || document.getElementById('reset-xy');
+
+    if (resetButton) {
+        resetButton.addEventListener('click', () => {
+            browser.storage.local.set({ catPosition: { left: 0, top: 0 } });
+        });
+    }
 });
