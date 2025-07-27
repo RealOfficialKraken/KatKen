@@ -13,9 +13,9 @@ browser.storage.onChanged.addListener((changes, area) => {
     const newPixelSize = parseFloat(changes.pixelSize.newValue) || 1;
     dragParent.style.setProperty('--pixel-size', newPixelSize);
 
-    // Recalculate sprite row offset using the new pixel size and current row
+    //recalculate sprite row offset using the new pixel size and current row
     const spriteHeight = 32;
-    // Use your current row variable, default to 1 if not set
+    //use current row variable, default to 1 if not set
     const row = typeof previousRow !== 'undefined' ? previousRow : 1;
     const newOffset = -1 * spriteHeight * newPixelSize * row;
     draggable.style.setProperty('--sheet-row', `${newOffset}px`);
@@ -25,6 +25,10 @@ browser.storage.onChanged.addListener((changes, area) => {
     const newPos = changes.catPosition.newValue;
     dragParent.style.left = `${newPos.left}px`;
     dragParent.style.top = `${newPos.top}px`;
+  }
+
+  if (area === 'local' && changes.catVisible) {
+    dragParent.style.display = changes.catVisible.newValue ? '' : 'none';
   }
 });
 
@@ -41,13 +45,12 @@ draggable.className = 'char-spritesheet';
 document.documentElement.insertBefore(dragParent, document.body);
 dragParent.appendChild(draggable);
 
-// ✅ NOW apply pixelSize (AFTER DOM is ready)
 browser.storage.local.get('pixelSize').then(result => {
   const pixelSize = parseFloat(result.pixelSize) || 1;
   dragParent.style.setProperty('--pixel-size', pixelSize);
 
   const spriteHeight = 32;
-  const row = previousRow; // always valid now
+  const row = previousRow;
   const initialOffset = -1 * spriteHeight * pixelSize * row;
   draggable.style.setProperty('--sheet-row', `${initialOffset}px`);
 });
@@ -56,6 +59,13 @@ browser.storage.local.get('catPosition').then((result) => {
     dragParent.style.left = `${result.catPosition.left}px`;
     dragParent.style.top = `${result.catPosition.top}px`;
   }
+});
+browser.storage.local.get('catVisible').then(result => {
+    if (result.catVisible === false) {
+        dragParent.style.display = 'none';
+    } else {
+        dragParent.style.display = '';
+    }
 });
 
 //declare vars

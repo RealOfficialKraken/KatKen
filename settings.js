@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slider = document.getElementById('pixelSize');
     const label = document.getElementById('sizeLabel');
+    const toggleCat = document.getElementById('toggle-cat');
 
     function updateLabel(value) {
         label.textContent = `Size: ${value}x`;
@@ -24,5 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Storage after set:", items);
             });
         });
+    });
+
+    browser.storage.local.get('catVisible').then(result => {
+        toggleCat.checked = result.catVisible !== false; // default to true
+    });
+
+    toggleCat.addEventListener('change', () => {
+        browser.storage.local.set({ catVisible: toggleCat.checked });
     });
 });

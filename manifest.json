@@ -13,6 +13,11 @@
             "storage",
             "scripting"
         ],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{0f9353a2-1ec8-48a9-9d27-346dc0b661bf}"
+        }
+    },
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
