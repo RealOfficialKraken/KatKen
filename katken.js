@@ -34,6 +34,11 @@ ext.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.catVisible) {
     dragParent.style.display = changes.catVisible.newValue ? '' : 'none';
   }
+
+  if (area === 'local' && changes.catFacing) {
+    const newFacing = changes.catFacing.newValue;
+    dragParent.style.setProperty('--facing', newFacing);
+  }
 });
 
 //construct the parent element
@@ -71,6 +76,18 @@ ext.storage.local.get('catVisible').then(result => {
     } else {
         dragParent.style.display = '';
     }
+});
+ext.storage.local.get('catFacing').then(result => {
+  const facing = typeof result.catFacing !== 'undefined' ? result.catFacing : -1;
+  dragParent.style.setProperty('--facing', facing);
+});
+ext.storage.local.get('catSpriteRow').then(result => {
+  const spriteHeight = 32;
+  const pixelSize = parseFloat(getComputedStyle(dragParent).getPropertyValue('--pixel-size')) || 1;
+  const row = typeof result.catSpriteRow !== 'undefined' ? result.catSpriteRow : 1;
+  previousRow = row;
+  const initialOffset = -1 * spriteHeight * pixelSize * row;
+  draggable.style.setProperty('--sheet-row', `${initialOffset}px`);
 });
 
 //declare vars
@@ -130,6 +147,7 @@ dragParent.addEventListener('click', () => {
 
   const randomFacing = Math.random() < 0.5 ? -1 : 1;
   dragParent.style.setProperty('--facing', randomFacing);
+  ext.storage.local.set({ catFacing: randomFacing });
 
   if (resetTimeoutId) {
     clearTimeout(resetTimeoutId);
@@ -169,6 +187,9 @@ dragParent.addEventListener('click', () => {
   const spriteHeight = 32;
   const newOffset = -1 * spriteHeight * pixelSize * newRow;
   draggable.style.setProperty('--sheet-row', `${newOffset}px`);
+
+  previousRow = newRow;
+  ext.storage.local.set({ catSpriteRow: previousRow });
 });
 
 //idle timer code
