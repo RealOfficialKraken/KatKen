@@ -7,18 +7,50 @@
 // He's still alive during this time of writing c:
 
 
+//add listener for pixel size
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.pixelSize) {
+    const newPixelSize = parseFloat(changes.pixelSize.newValue) || 1;
+    dragParent.style.setProperty('--pixel-size', newPixelSize);
+
+    // Recalculate sprite row offset using the new pixel size and current row
+    const spriteHeight = 32;
+    // Use your current row variable, default to 1 if not set
+    const row = typeof previousRow !== 'undefined' ? previousRow : 1;
+    const newOffset = -1 * spriteHeight * newPixelSize * row;
+    draggable.style.setProperty('--sheet-row', `${newOffset}px`);
+  }
+
+  if (area === 'local' && changes.catPosition) {
+    const newPos = changes.catPosition.newValue;
+    dragParent.style.left = `${newPos.left}px`;
+    dragParent.style.top = `${newPos.top}px`;
+  }
+});
+
 //construct the parent element
 const dragParent = document.createElement('div');
-dragParent.className = 'character'
+dragParent.className = 'character';
 dragParent.id = 'draggable';
 
 //construct the child element containing the spritesheet
 const draggable = document.createElement('div');
-draggable.className = 'char-spritesheet'
+draggable.className = 'char-spritesheet';
 
 //inject construct outside of the <body> element
 document.documentElement.insertBefore(dragParent, document.body);
 dragParent.appendChild(draggable);
+
+// ✅ NOW apply pixelSize (AFTER DOM is ready)
+browser.storage.local.get('pixelSize').then(result => {
+  const pixelSize = parseFloat(result.pixelSize) || 1;
+  dragParent.style.setProperty('--pixel-size', pixelSize);
+
+  const spriteHeight = 32;
+  const row = previousRow; // always valid now
+  const initialOffset = -1 * spriteHeight * pixelSize * row;
+  draggable.style.setProperty('--sheet-row', `${initialOffset}px`);
+});
 browser.storage.local.get('catPosition').then((result) => {
   if (result.catPosition) {
     dragParent.style.left = `${result.catPosition.left}px`;
@@ -31,7 +63,7 @@ let isDragging = false;
 let didDrag = false;
 let offsetX = 0;
 let offsetY = 0;
-let previousRow = -1;
+let previousRow = 1; // <-- set to 1 instead of -1
 let resetTimeoutId = null;
 let resetTimeoutIdIdle = null;
 let idleTimer = 3700; //Vinny boy sit and watch your mouse (kinda :P)
@@ -95,37 +127,47 @@ dragParent.addEventListener('click', () => {
   }
 
   resetTimeoutIdIdle = setTimeout(() => {
-    draggable.style.setProperty('--sheet-row', '-96px');
+    const pixelSize = parseFloat(getComputedStyle(dragParent).getPropertyValue('--pixel-size')) || 1;
+    const spriteHeight = 32;
+    const idleOffset = -1 * spriteHeight * pixelSize * 1; // row 1
+    draggable.style.setProperty('--sheet-row', `${idleOffset}px`);
     previousRow = 1;
     resetTimeoutIdIdle = null;
   }, idleTimer);
+
   resetTimeoutId = setTimeout(() => {
+    const pixelSize = parseFloat(getComputedStyle(dragParent).getPropertyValue('--pixel-size')) || 1;
+    const spriteHeight = 32;
     draggable.style.setProperty('--sheet-row', '0px');
     previousRow = 0;
     resetTimeoutId = null;
   }, sleepTimer);
 
-let newRow;
-do {
-  newRow = 2 + Math.floor(Math.random() * 2);
-} while (newRow === previousRow);
+  let newRow;
+  do {
+    newRow = 2 + Math.floor(Math.random() * 2);
+  } while (newRow === previousRow);
 
-
+  //set sprite sheet row depending on pixel size
   previousRow = newRow;
-  const newOffset = -96 * newRow;
+  const pixelSize = parseFloat(getComputedStyle(dragParent).getPropertyValue('--pixel-size')) || 1;
+  const spriteHeight = 32;
+  const newOffset = -1 * spriteHeight * pixelSize * newRow;
   draggable.style.setProperty('--sheet-row', `${newOffset}px`);
 });
 
+//idle timer code
 resetTimeoutId = setTimeout(() => {
     draggable.style.setProperty('--sheet-row', '0px');
     previousRow = 0;
     resetTimeoutId = null;
   }, sleepTimer);
 
-browser.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.catPosition) {
-    const newPos = changes.catPosition.newValue;
-    dragParent.style.left = `${newPos.left}px`;
-    dragParent.style.top = `${newPos.top}px`;
-  }
+
+
+//log the storage values to the console at all times
+browser.storage.local.get(null).then(items => {
+  console.log("KatKen storage contents:", items);
+}).catch(err => {
+  console.error("Error reading storage:", err);
 });

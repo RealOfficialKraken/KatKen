@@ -1,12 +1,17 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "KatKen",
-    "version": "1.0",
+    "version": "1.2",
+    "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+    },
 
     "description": "A fun little extension to add my kitty Vincent on top of your window browser. Click to drag!",
     "permissions": [
             "activeTab",
-            "storage"
+            "storage",
+            "scripting"
         ],
     "content_scripts": [
         {
@@ -14,5 +19,8 @@
             "js": ["katken.js"],
             "css": ["katken.css"]
         }
-    ]
+    ],
+    "action": {
+        "default_popup": "settings.html"
+    }
 }
