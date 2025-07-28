@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const slider = document.getElementById('pixelSize');
     const label = document.getElementById('sizeLabel');
     const toggleCat = document.getElementById('toggle-cat');
+    const debugMenu = document.getElementById('debug-menu');
+    const debugSwitch = document.getElementById('in-debug');
+    const debugContent = document.getElementById('dmenu');
 
     function updateLabel(value) {
         label.textContent = `Size: ${value}x`;
@@ -9,18 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //debug menu keydown listener
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'd' || e.key === 'D') {
-            myFunction(); // Replace with your function
+        if (e.key.toLowerCase() === 'd') {
+            if (debugMenu.style.display === 'flex') {
+                debugMenu.style.display = 'none';
+            } else {
+                debugMenu.style.display = 'flex';
+            }
         }
     });
-
-    function myFunction() {
-        const debugMenu = document.getElementById('debug-menu');
-        if (debugMenu) {
-            debugMenu.style.display = debugMenu.style.display === 'flex' ? 'none' : 'flex';
-        }
-    }
-});
 
     ext.storage.local.get("pixelSize").then(result => {
         let pixelSize = Number(result.pixelSize);
@@ -51,11 +50,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const resetButton = document.querySelector('label[for="reset-xy"]') || document.getElementById('reset-xy');
+    const draggable = document.querySelector('.char-spritesheet');
 
     if (resetButton) {
         resetButton.addEventListener('click', () => {
             ext.storage.local.set({ catPosition: { left: 0, top: 0 } });
         });
+    }
+
+    // Show/hide debug content when switch is toggled
+    debugSwitch.addEventListener('change', () => {
+        if (debugSwitch.checked) {
+            debugContent.style.display = 'flex';
+            draggable.style.border = '2px solid red';
+            draggable.style.overflow = 'visible';
+        } else {
+            debugContent.style.display = 'none';
+            draggable.style.border = 'none';
+            draggable.style.overflow = 'hidden';
+        }
+    });
+
+    // Set initial state on load
+    if (debugSwitch.checked) {
+        debugContent.style.display = 'flex';
+        draggable.style.border = '2px solid red';
+        draggable.style.overflow = 'visible';
+    } else {
+        debugContent.style.display = 'none';
+        draggable.style.border = 'none';
+        draggable.style.overflow = 'hidden';
     }
 });
 
