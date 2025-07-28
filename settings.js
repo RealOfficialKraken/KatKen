@@ -7,6 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
         label.textContent = `Size: ${value}x`;
     }
 
+    //debug menu keydown listener
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') {
+            myFunction(); // Replace with your function
+        }
+    });
+
+    function myFunction() {
+        const debugMenu = document.getElementById('debug-menu');
+        if (debugMenu) {
+            debugMenu.style.display = debugMenu.style.display === 'flex' ? 'none' : 'flex';
+        }
+    }
+});
+
     ext.storage.local.get("pixelSize").then(result => {
         let pixelSize = Number(result.pixelSize);
         if (!pixelSize || isNaN(pixelSize)) {
