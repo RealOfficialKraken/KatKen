@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const resetButton = document.querySelector('label[for="reset-xy"]') || document.getElementById('reset-xy');
-    const draggable = document.querySelector('.char-spritesheet');
 
     if (resetButton) {
         resetButton.addEventListener('click', () => {
@@ -62,24 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
     debugSwitch.addEventListener('change', () => {
         if (debugSwitch.checked) {
             debugContent.style.display = 'flex';
-            draggable.style.border = '2px solid red';
-            draggable.style.overflow = 'visible';
+            ext.storage.local.set({ debugMode: true });
         } else {
             debugContent.style.display = 'none';
-            draggable.style.border = 'none';
-            draggable.style.overflow = 'hidden';
+            ext.storage.local.set({ debugMode: false });
         }
     });
 
     // Set initial state on load
     if (debugSwitch.checked) {
         debugContent.style.display = 'flex';
-        draggable.style.border = '2px solid red';
-        draggable.style.overflow = 'visible';
+        ext.storage.local.set({ debugMode: true });
     } else {
         debugContent.style.display = 'none';
-        draggable.style.border = 'none';
-        draggable.style.overflow = 'hidden';
+        ext.storage.local.set({ debugMode: false });
     }
 });
 

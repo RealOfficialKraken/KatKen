@@ -200,6 +200,21 @@ resetTimeoutId = setTimeout(() => {
   }, sleepTimer);
 
 
+  ext.storage.local.get('debugMode').then(result => {
+  const debugOn = result.debugMode === true;
+
+  dragParent.style.border = debugOn ? '2px solid red' : 'none';
+  dragParent.style.overflow = debugOn ? 'visible' : 'hidden';
+});
+
+ext.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.debugMode) {
+    const debugOn = changes.debugMode.newValue === true;
+    dragParent.style.border = debugOn ? '2px solid red' : 'none';
+    dragParent.style.overflow = debugOn ? 'visible' : 'hidden';
+  }
+});
+
 
 //log the storage values to the console at all times
 ext.storage.local.get(null).then(items => {
