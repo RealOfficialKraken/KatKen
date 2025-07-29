@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "KrakenKat",
-    "version": "1.21",
+    "version": "1.23",
     "description": "A fun little extension to add my kitty Vincent on top of your window browser. Click to drag!",
     "icons": {
         "48": "icons/icon-48.png",
