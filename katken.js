@@ -49,7 +49,7 @@ dragParent.id = 'draggable';
 //construct the child element containing the spritesheet
 const draggable = document.createElement('div');
 draggable.className = 'char-spritesheet';
-//draggable.style.backgroundImage = `url('${imageUrl}')`;
+draggable.style.backgroundImage = `url('${imageUrl}')`;
 
 //inject construct outside of the <body> element
 document.documentElement.insertBefore(dragParent, document.body);

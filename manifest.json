@@ -7,6 +7,12 @@
         "48": "icons/icon-48.png",
         "96": "icons/icon-96.png"
     },
+    "web_accessible_resources": [
+        {
+        "resources": ["vincent-spritesheet.png"],
+        "matches": ["<all_urls>"]
+        }
+    ],
     "permissions": [
             "activeTab",
             "storage",
